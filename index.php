@@ -1,84 +1,106 @@
 <?PHP
-    
+
+$content = "";
+
 if(isset($_POST["content"])) {
     $handle = fopen ("data", "w");
     $content = fwrite($handle, stripslashes($_POST["content"]) );
     fclose ($handle);
+	die(json_encode(
+		array(
+			"saved" => true
+		)
+	));
 }
 
 if(file_exists("data")) {
     $handle = fopen ("data", "r");
-    $content = fread($handle, filesize("data"));
+    if(filesize("data")>0)
+        $content = fread($handle, filesize("data"));
     fclose ($handle);
 }
 
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>
-        <title>notes</title>
-        
-        <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-        
-        <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
-        <script type="text/javascript">
-            var isCtrl = false;
-            
-            window.onload = function() {
-            
-                CKEDITOR.replace( 'doc', {
-                    fullPage: true,
-                    language: 'de',
-                    toolbar: [
-                        { name: 'document', groups: [ 'mode', 'document', 'doctools' ], items: [ 'Source', '-', 'Save', 'Print' ] },
-                        { name: 'clipboard', groups: [ 'clipboard', 'undo' ], items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
-                        { name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ], items: [ 'Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ] },
-                        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat' ] },
-                        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ], items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ] },
-                        { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-                        { name: 'insert', items: [ 'Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak' ] },
-                        { name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
-                        { name: 'colors', items: [ 'TextColor', 'BGColor' ] },
-                        { name: 'tools', items: [ 'Maximize', 'ShowBlocks' ] }
-                    ],
-                    keystrokes: [
-                        [ CKEDITOR.ALT + 121 /*F10*/, 'toolbarFocus' ],
-                        [ CKEDITOR.ALT + 122 /*F11*/, 'elementsPathFocus' ],
+?><!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>aditu.de notes</title>
+		<meta charset='utf-8'>
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href='favicon.ico' rel='icon'>
+		<link rel="stylesheet" href="fonts/opensans_light_macroman/stylesheet.css"/>
+		<link rel="stylesheet" href="style.css"/>
+		
+	</head>
+	<body>
 
-                        [ CKEDITOR.SHIFT + 121 /*F10*/, 'contextMenu' ],
+		<textarea class="editable">
+			<?PHP echo $content; ?>
+		</textarea>
 
-                        [ CKEDITOR.CTRL + 90 /*Z*/, 'undo' ],
-                        [ CKEDITOR.CTRL + 89 /*Y*/, 'redo' ],
-                        [ CKEDITOR.CTRL + CKEDITOR.SHIFT + 90 /*Z*/, 'redo' ],
+		<script src="jquery-2.2.3.min.js"></script>
+		<script src="tinymce/tinymce.min.js"></script>
+		<script>
 
-                        [ CKEDITOR.CTRL + 76 /*L*/, 'link' ],
+			tinymce.init({
+			  selector: 'textarea',
+			  menubar: false,
+			  plugins: [
+				'advlist autolink lists link image charmap print preview anchor',
+				'searchreplace visualblocks code fullscreen',
+				'insertdatetime media table contextmenu paste code',
+				'textcolor',
+				'fullscreen'
+			  ],
+			  toolbar: 'savebutton | formatselect | bold italic strikethrough forecolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image code ',
+			  content_css: [
+				'codepen.min.css'
+			  ],
+			  
+			  setup: function (editor) {
+				editor.shortcuts.add('ctrl+s', '', function() {
+					$('.mce-i-save').click();
+				});
+				editor.shortcuts.add('alt+s', '', function() {
+					$('.mce-i-save').click();
+				});
 
-                        [ CKEDITOR.CTRL + 66 /*B*/, 'bold' ],
-                        [ CKEDITOR.CTRL + 73 /*I*/, 'italic' ],
-                        [ CKEDITOR.CTRL + 85 /*U*/, 'underline' ],
 
-                        [ CKEDITOR.ALT + 109 /*-*/, 'toolbarCollapse' ],
-                        [ CKEDITOR.ALT + 83 /*S*/, 'save' ]
-                    ]
-                });
-                
-                CKEDITOR.on('instanceReady', function(editorInstance) {
-                    editorInstance.editor.execCommand('maximize');
-                });
-            };
-            
-        </script>
-        
-        <link rel="shortcut icon" href="favicon.ico" />
-        
-    </head>
+				editor.on('init', function(e) {
+					setTimeout(function() {
+						editor.execCommand('mceFullScreen');
+					  
+					}, 100);
+				});
 
-    <body>
+				editor.addButton('savebutton', {
+				  text: false,
+				  icon: 'mce-ico mce-i-save',
+				  onclick: function (a) {
+					var resetButton = function() {
+						setTimeout(function() {
+							a.target.style.color = "#000000";
+						}, 5000);
+					};
+					
+					$.ajax({
+							method: "POST",
+							data: { content : editor.getContent() },
+							url: window.location.href, 
+							success: function(result) {
+								a.target.style.color = "#50AB3A";
+								resetButton();
+							},
+							error: function() {
+								a.target.style.color = "#FF0000";
+								resetButton();
+							}
+						});
+				  }
+				});
+			  },
+			});
+		</script>
 
-    <form action="index.php" method="post" id="docf">
-        <textarea id="doc" name="content" rows="10" cols="100"><?= $content ?></textarea>
-    </form>
-    
-    </body>
+	</body>
 </html>
