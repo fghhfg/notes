@@ -1,11 +1,16 @@
 php based note skript
 ==========================
 
+[[https://github.com/fghhfg/repository/blob/master/img/screenshot1.jpg|alt=screenshot]]
+
+
 ## install
 ### windows
 1. unzip [php](https://windows.php.net/download) in `c:/php`
 2. unzip this project in `foo/`
 3. [run](http://php.net/manual/en/features.commandline.webserver.php) `php -S localhost:8000 -t foo/`
+
+---
 
 Copyright (c) 2013 Tobias Zeising, tobias.zeising@aditu.de  
 http://www.aditu.de
