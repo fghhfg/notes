@@ -9,6 +9,11 @@ php based note skript
 2. unzip this project in `foo/`
 3. [run](http://php.net/manual/en/features.commandline.webserver.php) `php -S localhost:8000 -t foo/`
 
+## feature
+* just a editor on page
+* it can't upload images
+* it can't save
+
 ---
 
 Copyright (c) 2013 Tobias Zeising, tobias.zeising@aditu.de  
