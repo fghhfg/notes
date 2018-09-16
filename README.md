@@ -1,7 +1,7 @@
 php based note skript
 ==========================
 
-![screenshot][https://github.com/fghhfg/repository/blob/master/img/screenshot1.jpg]
+![screenshot](https://github.com/fghhfg/repository/blob/master/img/screenshot1.jpg)
 
 
 ## install
